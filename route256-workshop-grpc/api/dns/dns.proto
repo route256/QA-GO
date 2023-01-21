@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package ozon.route256.qa4.workshop.grpc;
+
+option go_package = "gitlab.ozon.dev/svpetrov/route256-workshop-grpc/pkg/dns"; 
+
+import "google/protobuf/empty.proto";
+
+
+service DNS {
+	rpc Register(DNSServiceToAddressBinding) returns (google.protobuf.Empty);
+	rpc Unregister(DNSServiceToAddressBinding) returns (google.protobuf.Empty);
+
+	rpc GetAddress(DNSService) returns (DNSServiceToAddressBinding);
+}
+
+message DNSService {
+	string name = 1;
+}
+
+message DNSAddress {
+	string address = 1;
+}
+
+message DNSServiceToAddressBinding {
+	DNSService service = 1;
+	repeated DNSAddress address = 2;
+}

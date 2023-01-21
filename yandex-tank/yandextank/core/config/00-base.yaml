@@ -1,0 +1,48 @@
+autostop:
+  enabled: true
+  package: yandextank.plugins.Autostop
+bfg:
+  enabled: false
+  package: yandextank.plugins.Bfg
+console:
+  enabled: true
+  package: yandextank.plugins.Console
+jmeter:
+  enabled: false
+  package: yandextank.plugins.JMeter
+json_report:
+  enabled: true
+  package: yandextank.plugins.JsonReport
+offline_report:
+  enabled: false
+  package: yandextank.plugins.OfflineReport
+phantom:
+  enabled: true
+  package: yandextank.plugins.Phantom
+pandora:
+  enabled: false
+  package: yandextank.plugins.Pandora
+rcheck:
+  enabled: true
+  package: yandextank.plugins.ResourceCheck
+shellexec:
+  enabled: true
+  package: yandextank.plugins.ShellExec
+telegraf:
+  enabled: true
+  package: yandextank.plugins.Telegraf
+rcassert:
+  enabled: true
+  package: yandextank.plugins.RCAssert
+overload:
+  enabled: false
+  package: yandextank.plugins.DataUploader
+influx:
+  enabled: false
+  package: yandextank.plugins.InfluxUploader
+opentsdb:
+  enabled: false
+  package: yandextank.plugins.OpenTSDBUploader
+metaconf:
+  enabled: false
+  package: yandextank.plugins.MetaConf

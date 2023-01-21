@@ -1,0 +1,117 @@
+image: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/golang:1.19-alpine
+
+variables:
+  ADD_DATA: 'data from vars.yml'
+  DOCKER_AUTH_CONFIG: '{"auths":{"gitlab.ozon.dev":{"username":"$CI_DEPENDENCY_PROXY_USER","password":"$CI_DEPENDENCY_PROXY_PASSWORD"}}}'
+
+stages:
+  - build
+  - publish
+  - deploy
+  - e2e
+  - post-deploy
+  - close
+
+build:
+  stage: build
+  script:
+    - echo "Build..."
+
+unit:
+  stage: build
+  script:
+    - echo "Run unit tests"
+
+linter:
+  stage: build
+  image: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/golangci/golangci-lint
+  script:
+    - echo "Run linters"
+
+pre-commit:
+  stage: build
+  image: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/kiwicom/pre-commit
+  script:
+    - echo "Run pre-commit"
+
+create image:
+  stage: publish
+  script:
+    - echo "Create image for dev/stg"
+
+release image:
+  stage: publish
+  script:
+    - echo "Create image for prod"
+
+development:
+  stage: deploy
+  script:
+    - echo "Deploy to dev environment"
+
+staging:
+  stage: deploy
+  script:
+    - echo "Deploy to stg environment"
+
+staging latest:
+  stage: deploy
+  script:
+    - echo "Update stg with last version"
+
+production:
+  stage: deploy
+  script:
+    - echo "Deploy to prod environment"
+
+production latest:
+  stage: deploy
+  script:
+    - echo "Update production with last version"
+
+ready to prod:
+  stage: close
+  script:
+    - echo "Ready to prod"
+
+close release:
+  stage: close
+  script:
+    - echo "Ready to prod"
+
+http test:
+  stage: e2e
+  services:
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/postgres:12
+      alias: postgres
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/confluentinc/cp-zookeeper:7.1.0
+      alias: zookeeper
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/confluentinc/cp-kafka:7.1.0
+      alias: kafka_1
+  variables:
+    # enable network
+    FF_NETWORK_PER_BUILD: 1
+    # postgres variables
+    POSTGRES_USER: docker
+    POSTGRES_PASSWORD: docker
+    POSTGRES_DB: act_device_api
+    # zookeeper variables
+    zk_id: "1"
+    ZOOKEEPER_CLIENT_PORT: 32181
+    ZOOKEEPER_TICK_TIME: 2000
+    ZOOKEEPER_SYNC_LIMIT: 2
+    # kafka variables
+    KAFKA_ZOOKEEPER_CONNECT: "zookeeper:32181"
+    KAFKA_LISTENERS: "INTERNAL://kafka_1:9092,OUTSIDE://kafka_1:9094"
+    KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka_1:9092,OUTSIDE://localhost:9094"
+    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT"
+    KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  before_script:
+    - apk add --update make curl git protoc protobuf protobuf-dev build-base
+    - go install gotest.tools/gotestsum@latest
+    - make deps-go
+    - ./bin/grpc-server &
+    - sleep 5
+  script:
+    - echo "Run http tests"

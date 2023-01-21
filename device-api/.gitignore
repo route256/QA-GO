@@ -1,0 +1,16 @@
+.idea/
+.cache
+.venv
+bin/
+data/
+main
+docker-compose.override.yaml
+
+cover.out
+
+json-report.txt
+
+unit-tests.xml
+/test/smoke/.env
+
+.DS_Store
