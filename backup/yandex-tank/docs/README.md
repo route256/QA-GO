@@ -1,1 +1,0 @@
-![Yandex.Metrics counter](https://mc.yandex.ru/watch/17743264)
