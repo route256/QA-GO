@@ -1,0 +1,89 @@
+image: gitlab.ozon.dev/qa/classroom-8/students/dependency_proxy/containers/golang:1.19-alpine
+
+variables:
+  ADD_DATA: 'data from vars.yml'
+  DOCKER_AUTH_CONFIG: '{"auths":{"gitlab.ozon.dev":{"username":"$CI_DEPENDENCY_PROXY_USER","password":"$CI_DEPENDENCY_PROXY_PASSWORD"}}}'
+
+stages:
+  - build
+  - publish
+  - deploy
+  - e2e
+  - post-deploy
+  - close
+
+build:
+  stage: build
+  script:
+    - echo "Build..."
+
+unit:
+  stage: build
+  script:
+    - echo "Run unit tests"
+
+linter:
+  stage: build
+  image: gitlab.ozon.dev/qa/classroom-8/students/dependency_proxy/containers/golangci/golangci-lint
+  script:
+    - echo "Run linters"
+
+pre-commit:
+  stage: build
+  image: gitlab.ozon.dev/qa/classroom-8/students/dependency_proxy/containers/kiwicom/pre-commit
+  script:
+    - echo "Run pre-commit"
+
+create image:
+  stage: publish
+  script:
+    - echo "Create image for dev/stg"
+
+release image:
+  stage: publish
+  script:
+    - echo "Create image for prod"
+
+development:
+  stage: deploy
+  script:
+    - echo "Deploy to dev environment"
+
+staging:
+  stage: deploy
+  script:
+    - echo "Deploy to stg environment"
+
+staging latest:
+  stage: deploy
+  script:
+    - echo "Update stg with last version"
+
+production:
+  stage: deploy
+  script:
+    - echo "Deploy to prod environment"
+
+production latest:
+  stage: deploy
+  script:
+    - echo "Update production with last version"
+
+ready to prod:
+  stage: close
+  script:
+    - echo "Ready to prod"
+
+close release:
+  stage: close
+  script:
+    - echo "Ready to prod"
+
+http test:
+  stage: e2e
+  extends: .base
+  script: 
+    - echo "E2E http test"
+  needs:
+    - build
+    - staging
